@@ -1,0 +1,23 @@
+---
+# Safe to locally store secrets for that playbook
+# This folder will NEVER be uploaded in the repository
+# A better alternative is to create a vpn server which acts as a bastion.
+safe_dir: "{{ lookup('ansible.builtin.env', 'HOME') + '/.distributed-platform-playground/safe' }}"
+safe_ssh_dir: "{{ safe_dir }}/ssh"
+
+# Connectivity roles
+# The main objective of this role is to automate connectivity
+# We first create an ssh keypair in the safe which will be reused for the automation user
+# Then, as root, we create the automation user + group
+# Then, still as root, we configure the automation group as sudoer
+# Then, still as root, we add the public key created in the safe, in the authorized key of the remotely created automation user
+# That way, when we execute the ansible playbooks as automation, and provide the ssh private key to ansible, the automation user will be automatically logged in without prompt and will be able to perform ansible admin tasks as if it was a root user
+# Finally, we validate the connectivity by logging in all servers as automation
+# We're now ready to run all subsequent playbooks as automation rather than root or any human account
+
+# sudo users group name
+sudoers_group: 'automation'
+# list of sudo users
+sudoers:
+  - 'automation'
+

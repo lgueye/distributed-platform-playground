@@ -1,0 +1,4 @@
+---
+- name: "Validate connectivity"
+  ansible.builtin.debug:
+      msg: "Connected to {{ inventory_hostname }} as {{ ansible_user }}"
