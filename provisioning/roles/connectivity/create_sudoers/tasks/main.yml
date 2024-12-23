@@ -1,0 +1,10 @@
+---
+- name: "Create sudoers accounts"
+  user:
+    name: "{{ item }}"
+  with_items: "{{ sudoers }}"
+- name: "Add authorized keys"
+  authorized_key:
+    user: "{{ item }}"
+    key: "{{ lookup('file', safe_ssh_dir + '/id_rsa.pub') }}"
+  with_items: "{{ sudoers }}"

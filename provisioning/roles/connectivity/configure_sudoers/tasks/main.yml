@@ -1,0 +1,18 @@
+---
+- name: Make sure we have an 'automation' group
+  group:
+    name: "{{ sudoers_group }}"
+    state: present
+
+- name: Allow 'automation' group to have passwordless sudo
+  template:
+    src: sudoers.j2
+    dest: /etc/sudoers.d/automation_group
+    validate: visudo -cf %s
+
+- name: Add sudoers users to automation group
+  user:
+    name: "{{ item }}"
+    groups: "{{ sudoers_group }}"
+    append: yes
+  with_items: "{{ sudoers }}"

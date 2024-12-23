@@ -1,0 +1,21 @@
+- hosts: 'localhost'
+  connection: 'local'
+  roles:
+    - role: 'connectivity/hosts_identity'
+
+- hosts: "&{{ target_env }}"
+  remote_user: "root"
+  vars:
+     ansible_ssh_private_key_file: "{{ lookup('ansible.builtin.env', 'HOME') + '/.ssh/id_rsa' }}"
+  become: 'yes'
+  roles:
+    - role: 'connectivity/create_sudoers'
+    - role: 'connectivity/configure_sudoers'
+
+- hosts: "&{{ target_env }}"
+  remote_user: "automation"
+  become: 'yes'
+  vars:
+     ansible_ssh_private_key_file: "{{ safe_ssh_dir + '/id_rsa'}}"
+  roles:
+    - role: 'connectivity/validate_connectivity'
