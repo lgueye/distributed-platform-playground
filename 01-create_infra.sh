@@ -12,6 +12,6 @@ cd ../.. || exit
 #ansible-galaxy collection install community.general
 
 export ANSIBLE_TF_DIR=cloud/digitalocean && ansible-playbook -i /etc/ansible/terraform.py provisioning/connectivity.yml -e "target_env=staging"
-#export ANSIBLE_TF_DIR=cloud/digitalocean && ansible-playbook -i /etc/ansible/terraform.py provisioning/essentials.yml -e "target_env=staging"
+export ANSIBLE_TF_DIR=cloud/digitalocean && ansible-playbook -i /etc/ansible/terraform.py provisioning/essentials.yml -e "target_env=staging"
 
 #sudo apt install python3-passlib
