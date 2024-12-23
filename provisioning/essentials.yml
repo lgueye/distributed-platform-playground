@@ -1,0 +1,27 @@
+- hosts: "&{{ target_env }}"
+  remote_user: "automation"
+  become: 'yes'
+  vars:
+     ansible_ssh_private_key_file: "{{ safe_ssh_dir + '/id_rsa'}}"
+  tasks:
+    # wait for
+    - name: 'wait until cache update is done'
+      shell: "while sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 1; done;"
+
+    # install os packages
+    - name: 'update cache'
+      apt:
+        update_cache: yes
+
+    # wait for
+    - name: 'wait until cache update is done'
+      shell: "while sudo fuser /var/lib/dpkg/lock-frontend >/dev/null 2>&1; do sleep 1; done;"
+
+    # install os packages
+    - name: 'install os packages'
+      apt:
+        pkg:
+        - curl
+        - vim
+        - haveged
+        state: present
