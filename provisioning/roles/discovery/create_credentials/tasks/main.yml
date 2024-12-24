@@ -1,0 +1,82 @@
+---
+
+- name: Create credentials dir
+  file:
+    path: "{{ consul_download_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: "Read package checksum file from {{ consul_download_dir }}/consul_{{ consul_version }}_SHA256SUMS"
+  stat:
+    path: "{{ consul_download_dir }}/consul_{{ consul_version }}_SHA256SUMS"
+  register: consul_checksum
+
+- name: "Download package checksum file from {{ consul_checksum_file_url }} to {{ consul_download_dir }}/consul_{{ consul_version }}_SHA256SUMS"
+  get_url:
+    url: "{{ consul_checksum_file_url }}"
+    dest: "{{ consul_download_dir }}/consul_{{ consul_version }}_SHA256SUMS"
+  when: not consul_checksum.stat.exists | bool
+
+- name: "Read package checksum from {{ consul_download_dir }}/consul_{{ consul_version }}_SHA256SUMS"
+  shell:
+    grep "{{ consul_pkg }}" "{{ consul_download_dir }}/consul_{{ consul_version }}_SHA256SUMS" | awk '{print $1}'
+  register: consul_sha256
+
+- name: "Check Consul package file from {{ consul_download_dir }}/{{ consul_pkg }}"
+  stat:
+    path: "{{ consul_download_dir }}/{{ consul_pkg }}"
+  register: consul_package
+
+- name: "Download Consul package from {{ consul_zip_url }} to {{ consul_download_dir }}/{{ consul_pkg }}"
+  get_url:
+    url: "{{ consul_zip_url }}"
+    dest: "{{ consul_download_dir }}/{{ consul_pkg }}"
+    checksum: "sha256:{{ consul_sha256.stdout }}"
+    timeout: "42"
+  when: not consul_package.stat.exists | bool
+
+- name: "Unarchive Consul package from {{ consul_download_dir }}/{{ consul_pkg }} to {{ consul_download_dir }}/"
+  unarchive:
+    src: "{{ consul_download_dir }}/{{ consul_pkg }}"
+    dest: "{{ consul_download_dir }}/"
+    creates: "{{ consul_download_dir }}/consul"
+
+- name: Create agents (servers and clients) gossip key
+  shell: "./consul keygen > consul-gossip-key.txt"
+  args:
+    chdir: "{{ consul_download_dir }}"
+
+- name: Create TLS certificate authority
+  shell: "./consul tls ca create"
+  args:
+    chdir: "{{ consul_download_dir }}"
+
+- name: Create TLS servers certificates
+  shell: "./consul tls cert create -server -dc {{ hostvars[groups['discovery_server'][0]].datacenter_name }}"
+  args:
+    chdir: "{{ consul_download_dir }}"
+
+- name: Create TLS clients certificates
+  shell: "./consul tls cert create -client -dc {{ hostvars[groups['discovery_server'][0]].datacenter_name }}"
+  args:
+    chdir: "{{ consul_download_dir }}"
+
+- name: Create consul credentials dir
+  file:
+    path: "{{ safe_discovery_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: "Copy consul credentials from {{ consul_download_dir }} to {{ safe_discovery_dir }}"
+  copy: src="{{ item }}" dest="{{ safe_discovery_dir }}/" mode='600'
+  with_fileglob:
+    - "{{ consul_download_dir }}/*.pem"
+    - "{{ consul_download_dir }}/consul*.txt"
+
+- name: "Delete temp credentials"
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_fileglob:
+    - "{{ consul_download_dir }}/*.pem"
+    - "{{ consul_download_dir }}/consul*.txt"

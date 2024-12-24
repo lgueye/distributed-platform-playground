@@ -1,0 +1,14 @@
+---
+
+- name: interpolate {{ service_name }} consul registration config
+  template: src="consul.json.j2" dest="/etc/consul.d/{{ service_name }}.json"
+
+- name: stop consul systemd service
+  service: name="consul" state='stopped'
+  ignore_errors: 'yes'
+
+- name: enable and start consul.service
+  service: name=consul.service enabled='yes' state='restarted'
+
+- name: "wait for port {{ consul_ports.http }} to be available"
+  wait_for: port="{{ consul_ports.http }}" delay='1' timeout="{{ service_startup_timeout }}"

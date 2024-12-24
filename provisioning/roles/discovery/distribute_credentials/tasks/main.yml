@@ -1,0 +1,11 @@
+---
+
+- name: "Copy consul ca pub key from {{ safe_discovery_dir }}/*ca.pem to /etc/consul.d/"
+  copy: src="{{ item }}" dest='/etc/consul.d/'
+  with_fileglob:
+    - "{{ safe_discovery_dir }}/*ca.pem"
+
+- name: "Copy consul {{ consul_role }} credentials from {{ safe_discovery_dir }} to /etc/consul.d/"
+  copy: src="{{ item }}" dest='/etc/consul.d/'
+  with_fileglob:
+    - "{{ safe_discovery_dir }}/*{{ consul_role }}-consul-*"

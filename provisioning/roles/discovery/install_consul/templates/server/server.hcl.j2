@@ -1,0 +1,10 @@
+server = true
+ui_config {
+    enabled = true
+    content_path = "/discovery/"
+}
+ca_file = "/etc/consul.d/consul-agent-ca.pem"
+cert_file = "/etc/consul.d/{{ hostvars[groups['discovery_server'][0]].datacenter_name }}-server-consul-0.pem"
+key_file = "/etc/consul.d/{{ hostvars[groups['discovery_server'][0]].datacenter_name }}-server-consul-0-key.pem"
+client_addr = "{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}"
+bootstrap_expect = {{ groups['discovery_server'] | count | to_json }}
