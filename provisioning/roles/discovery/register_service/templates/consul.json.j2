@@ -1,0 +1,19 @@
+{
+  "service": {
+    "name": "{{ service_name }}",
+    "port": {{ service_port }},
+    "tags": ["{{ target_env }}", "{{ service_name }}"],
+    "checks": [
+      {
+         "id": "{{ service_name }}",
+         "name": "{{ service_name }}",
+        {% if health_type == 'http' %}
+         "http": "{{ health_url }}",
+        {% else %}
+         "tcp": "{{ health_url }}",
+        {% endif %}
+         "interval": "{{ health_check_interval }}"
+      }
+    ]
+  }
+}

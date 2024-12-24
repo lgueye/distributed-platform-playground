@@ -1,0 +1,3 @@
+ca_file = "/etc/consul.d/consul-agent-ca.pem"
+cert_file = "/etc/consul.d/{{ hostvars[groups['discovery_server'][0]].datacenter_name }}-client-consul-0.pem"
+key_file = "/etc/consul.d/{{ hostvars[groups['discovery_server'][0]].datacenter_name }}-client-consul-0-key.pem"

@@ -1,0 +1,12 @@
+---
+- name: "[systemd-resolved vs dnsmasq conflict]: stop systemd-resolved.service"
+  service: name="systemd-resolved" state='stopped'
+- name: "[systemd-resolved vs dnsmasq conflict]: disable systemd-resolved.service"
+  service: name="systemd-resolved" enabled='false'
+- name: "[systemd-resolved vs dnsmasq conflict]: update local name server"
+  lineinfile:
+    path: /etc/resolv.conf
+    regexp: '^nameserver 127.0.0.53'
+    line: 'nameserver 127.0.0.1'
+- name: "[systemd-resolved vs dnsmasq conflict]: restart dnsmasq.service"
+  service: name="dnsmasq" state='restarted'

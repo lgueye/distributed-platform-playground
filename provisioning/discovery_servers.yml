@@ -1,0 +1,24 @@
+- hosts: 'localhost'
+  connection: 'local'
+  tasks:
+    - name: "Check if safe folder (to permanently store credentials) is empty before proceeding"
+      find:
+        paths: "{{ safe_discovery_dir }}"
+      register: consul_credentials_found
+    - block:
+        - include_role: {name: 'discovery/create_credentials'}
+          when: consul_credentials_found.matched == 0
+      rescue:
+        - fail:
+            msg: "Failed to create credentials"
+
+- hosts: "&{{ target_env }}:discovery_server"
+  remote_user: "automation"
+  become: 'yes'
+  vars:
+    ansible_ssh_private_key_file: "{{ safe_ssh_dir + '/id_rsa'}}"
+    consul_gossip_key: "{{ lookup('file', safe_discovery_dir + '/consul-gossip-key.txt') }}"
+    consul_role: 'server'
+  roles:
+    - role: 'discovery/distribute_credentials'
+    - role: 'discovery/install_consul'
