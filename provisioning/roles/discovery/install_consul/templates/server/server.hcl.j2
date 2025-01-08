@@ -1,7 +1,7 @@
 server = true
 ui_config {
     enabled = true
-    content_path = "/discovery/"
+    # content_path = "/discovery/"
 }
 ca_file = "/etc/consul.d/consul-agent-ca.pem"
 cert_file = "/etc/consul.d/{{ hostvars[groups['discovery_server'][0]].datacenter_name }}-server-consul-0.pem"

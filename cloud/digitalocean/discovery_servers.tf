@@ -6,7 +6,7 @@ resource "digitalocean_droplet" "consul_server_01_droplet" {
   image = var.droplet_image
   name = "consul-${var.server_role}-01"
   region = var.datacenter_name
-  size = var.droplet_size_2g
+  size = var.droplet_size_1g
   ssh_keys = [
     var.ssh_fingerprint]
   tags = [
@@ -33,7 +33,7 @@ resource "digitalocean_droplet" "consul_server_02_droplet" {
   image = var.droplet_image
   name = "consul-${var.server_role}-02"
   region = var.datacenter_name
-  size = var.droplet_size_2g
+  size = var.droplet_size_1g
   ssh_keys = [
     var.ssh_fingerprint]
   tags = [
@@ -60,7 +60,7 @@ resource "digitalocean_droplet" "consul_server_03_droplet" {
   image = var.droplet_image
   name = "consul-${var.server_role}-03"
   region = var.datacenter_name
-  size = var.droplet_size_2g
+  size = var.droplet_size_1g
   ssh_keys = [
     var.ssh_fingerprint]
   tags = [

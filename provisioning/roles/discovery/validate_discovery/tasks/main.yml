@@ -1,0 +1,11 @@
+---
+# - name: "Validate discovery"
+# - name: Get JSON from the Interwebs
+#   ansible.builtin.uri:
+#     url: "http://165.232.79.138:{{ consul_ports.http }}/v1/health/node/{{ inventory_hostname }}"
+#     return_content: yes
+#   register: json_response
+
+- name: "Validate discovery"
+  ansible.builtin.debug:
+    msg: "DNS record for node {{ inventory_hostname }} is {{ query('community.general.dig', inventory_hostname + '.node.consul')}}"
