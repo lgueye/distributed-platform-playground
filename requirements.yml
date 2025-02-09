@@ -1,5 +1,5 @@
 - src: oefenweb.dnsmasq
-- src: community.general
+# - src: community.general
 #- src: darkwizard242.adoptopenjdk
 #- src: cloudalchemy.node_exporter
 #- src: cloudalchemy.prometheus

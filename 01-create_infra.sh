@@ -8,8 +8,8 @@ terraform apply --auto-approve -var "do_token=${DO_API_TOKEN}" -var "ssh_fingerp
 
 cd ../.. || exit
 
-#ansible-galaxy install -r requirements.yml
-#ansible-galaxy collection install community.general
+ansible-galaxy install -r requirements.yml
+ansible-galaxy collection install community.general
 
 export ANSIBLE_TF_DIR=cloud/digitalocean && ansible-playbook -i /etc/ansible/terraform.py provisioning/connectivity.yml -e "target_env=staging"
 export ANSIBLE_TF_DIR=cloud/digitalocean && ansible-playbook -i /etc/ansible/terraform.py provisioning/essentials.yml -e "target_env=staging"
